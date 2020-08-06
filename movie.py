@@ -57,16 +57,26 @@ for movie in final_movie_data:
     soup = BeautifulSoup(response.text,'html.parser')
     ripple_list = soup.select('body > div > div > div.score_result > ul > li')
     for ripple in ripple_list:
-        ripples = ripple.select_one(f'#_filtered_ment_{num}')
-        scores = ripple.select_one('div.star_score>em')
+        if ripple.select_one(f'#_filtered_ment_{num} > #_unfold_ment{num}'):
+            ripples = ripple.select_one(f'#_filtered_ment_{num} > span > a')
+            ripples = ripples['data-src']
+            scores = ripple.select_one('div.star_score>em')
+            movie_data = {'score' : scores.text, 'review' : ripples}
+        else:
+            ripples = ripple.select_one(f'#_filtered_ment_{num}')
+            scores = ripple.select_one('div.star_score>em')
+            movie_data = {'score' : scores.text, 'review' : ripples.text.strip()}
+        
         # print(ripples.text.strip())
         # print(scores.text)
         num+=1
-        movie_data = {'score' : scores.text, 'review' : ripples.text.strip()}
+        
         # print(movie_data)
         movie_score_review.append(movie_data)
-    
+        
+
     print(movie_score_review)
+   
 
 
     # with open('movie_rank.csv','a',newline='',encoding='utf-8-sig') as csvfile:
